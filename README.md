@@ -78,7 +78,6 @@ customers
     │
     │ 1
     │
-    │
     │ many
     ▼
 orders
@@ -104,26 +103,6 @@ Stores customer order information.
 | `customer_id` | `INT`           | Foreign key referencing `customers` |
 | `order_date`  | `DATE`          | Date of the order                   |
 | `amount`      | `DECIMAL(10,2)` | Order amount                        |
-
-### Relationship
-
-```text
-customers
------------
-customer_id (PK)
-customer_name
-city
-       │
-       │
-       │ 1 : Many
-       ▼
-orders
------------
-order_id (PK)
-customer_id (FK)
-order_date
-amount
-```
 
 ---
 
@@ -155,15 +134,13 @@ The dataset is intentionally structured to support analytical SQL problems invol
 
 ```text
 cte_windows-functions-beginner__mid-level/
+│
 ├── 00_schema__data_insertion.sql
+├── 01_level_beginner.sql
 └── README.md
 ```
 
----
-
-### Current SQL File
-
-`00_schema__data_insertion.sql`
+### `00_schema__data_insertion.sql`
 
 Contains:
 
@@ -175,11 +152,23 @@ Contains:
 6. Basic aggregation checks
 7. Initial Window Function demonstration
 
+### `01_level_beginner.sql`
+
+Contains the solutions for the **Beginner-level CTE & Window Function practice questions**.
+
+#### Completed
+
+- ✅ Question 01 — First CTE
+
+#### Currently working on
+
+- 🚧 Questions 02–10
+
 ---
 
 # 🔎 Current Progress
 
-### Phase 1 — Database & Dataset Setup ✅
+## Phase 1 — Database & Dataset Setup ✅
 
 - [x] Create database
 - [x] Create `customers` table
@@ -190,7 +179,7 @@ Contains:
 - [x] Insert 60 orders
 - [x] Verify inserted data
 
-### Phase 2 — Basic SQL Validation ✅
+## Phase 2 — Basic SQL Validation ✅
 
 - [x] Count customers
 - [x] Count orders
@@ -199,28 +188,33 @@ Contains:
 - [x] Calculate total spending by customer
 - [x] Compare `GROUP BY` aggregation with Window Functions
 
-### Phase 3 — CTE & Window Function Practice 🚧
+## Phase 3 — CTE & Window Function Practice 🚧
 
-- [ ] Beginner Question 01
-- [ ] Beginner Question 02
-- [ ] Beginner Question 03
-- [ ] Beginner Question 04
-- [ ] Beginner Question 05
-- [ ] Beginner Question 06
-- [ ] Beginner Question 07
-- [ ] Beginner Question 08
-- [ ] Beginner Question 09
-- [ ] Beginner Question 10
-- [ ] Mid-Level Question 11
-- [ ] Mid-Level Question 12
-- [ ] Mid-Level Question 13
-- [ ] Mid-Level Question 14
-- [ ] Mid-Level Question 15
-- [ ] Mid-Level Question 16
-- [ ] Mid-Level Question 17
-- [ ] Mid-Level Question 18
-- [ ] Mid-Level Question 19
-- [ ] Mid-Level Question 20
+### 🟢 Beginner
+
+- [x] Question 01 — First CTE
+- [ ] Question 02 — CTE + Filtering
+- [ ] Question 03 — `ROW_NUMBER()`
+- [ ] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
+- [ ] Question 05 — `RANK()`
+- [ ] Question 06 — Customer Total Using Window Function
+- [ ] Question 07 — Customer Average Order Value
+- [ ] Question 08 — Running Total
+- [ ] Question 09 — Previous Order Amount
+- [ ] Question 10 — First Order Per Customer
+
+### 🟡 Mid-Level
+
+- [ ] Question 11 — Highest Order Per Customer
+- [ ] Question 12 — Second Highest Order Per Customer
+- [ ] Question 13 — Customers With Above-Average Orders
+- [ ] Question 14 — Order Difference From Previous Order
+- [ ] Question 15 — Top 2 Orders Per Customer
+- [ ] Question 16 — Running Percentage of Customer Spending
+- [ ] Question 17 — Compare Each Order With Previous Order
+- [ ] Question 18 — Latest Order vs Largest Order
+- [ ] Question 19 — Monthly Sales + Month-over-Month Change
+- [ ] Question 20 — Customer Ranking + Top Customers
 
 ---
 
@@ -243,6 +237,10 @@ Topics include:
 - `LAG()`
 - First-row-per-group problems
 
+### Progress
+
+**1 / 10 completed — 10%**
+
 ---
 
 ## 🟡 Level 2 — Mid-Level
@@ -262,6 +260,10 @@ Topics include:
 - Month-over-month analysis
 - Customer ranking
 
+### Progress
+
+**0 / 10 completed — 0%**
+
 ---
 
 # 🧠 Key Concepts
@@ -269,6 +271,8 @@ Topics include:
 ## CTE
 
 A **Common Table Expression** creates a temporary named result that can be referenced by the query that follows.
+
+Example from Question 01:
 
 ```sql
 WITH customer_orders AS (
@@ -282,7 +286,20 @@ SELECT *
 FROM customer_orders;
 ```
 
-CTEs will be used extensively in this project to break complex analytical problems into smaller logical steps.
+### Question 01 — What Was Practiced?
+
+The first exercise focuses on understanding the basic structure:
+
+```text
+WITH
+    CTE_Name AS (
+        SELECT ...
+    )
+SELECT ...
+FROM CTE_Name;
+```
+
+The CTE creates an intermediate result named `customer_orders`, which can then be queried by the main `SELECT` statement.
 
 ---
 
@@ -304,49 +321,6 @@ FROM orders;
 ```
 
 This allows the individual orders to remain visible while calculating the customer's total spending.
-
----
-
-## GROUP BY vs Window Functions
-
-One of the important concepts being practiced is understanding the difference between aggregation and Window Functions.
-
-### `GROUP BY`
-
-```sql
-SELECT
-    customer_id,
-    SUM(amount) AS total_spending
-FROM orders
-GROUP BY customer_id;
-```
-
-Produces one row per customer.
-
-### Window Function
-
-```sql
-SELECT
-    customer_id,
-    order_id,
-    amount,
-    SUM(amount) OVER (
-        PARTITION BY customer_id
-    ) AS total_spending
-FROM orders;
-```
-
-Keeps the individual order rows while displaying the customer's total spending.
-
----
-
-# 🛠️ Technologies
-
-- **Microsoft SQL Server**
-- **T-SQL**
-- SQL Server Management Studio (SSMS)
-- Git
-- GitHub
 
 ---
 
@@ -405,18 +379,28 @@ CTE + Window Function
 
 ---
 
+# 🛠️ Technologies
+
+- **Microsoft SQL Server**
+- **T-SQL**
+- SQL Server Management Studio (SSMS)
+- Git
+- GitHub
+
+---
+
 # 📈 Project Progress
 
-| Phase                          | Status         |
-| ------------------------------ | -------------- |
-| Database Setup                 | ✅ Complete    |
-| Schema Creation                | ✅ Complete    |
-| Data Insertion                 | ✅ Complete    |
-| Data Verification              | ✅ Complete    |
-| Basic Aggregation              | ✅ Complete    |
-| Beginner Practice              | 🚧 Not Started |
-| Mid-Level Practice             | 🚧 Not Started |
-| CTE + Window Function Problems | 🚧 Not Started |
+| Phase                     | Status         |
+| ------------------------- | -------------- |
+| Database Setup            | ✅ Complete    |
+| Schema Creation           | ✅ Complete    |
+| Data Insertion            | ✅ Complete    |
+| Data Verification         | ✅ Complete    |
+| Basic Aggregation         | ✅ Complete    |
+| Beginner Question 01      | ✅ Complete    |
+| Beginner Questions 02–10  | 🚧 In Progress |
+| Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
 
@@ -443,6 +427,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
+**Beginner Question 01: COMPLETE ✅**
+
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Begin **Level 1 — Beginner CTE & Window Function Problems**.
+> Next step: Complete **Question 02 — CTE + Filtering**.
