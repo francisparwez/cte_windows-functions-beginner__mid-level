@@ -162,7 +162,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 
 #### Currently working on
 
-- 🚧 Questions 02–10
+- 🚧 Questions 03–10
 
 ---
 
@@ -193,7 +193,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 ### 🟢 Beginner
 
 - [x] Question 01 — First CTE
-- [ ] Question 02 — CTE + Filtering
+- [x] Question 02 — CTE + Filtering
 - [ ] Question 03 — `ROW_NUMBER()`
 - [ ] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
 - [ ] Question 05 — `RANK()`
@@ -239,7 +239,7 @@ Topics include:
 
 ### Progress
 
-**1 / 10 completed — 10%**
+**2 / 10 completed — 20%**
 
 ---
 
@@ -300,6 +300,36 @@ FROM CTE_Name;
 ```
 
 The CTE creates an intermediate result named `customer_orders`, which can then be queried by the main `SELECT` statement.
+
+### Question 02 — What Was Practiced?
+
+Question 02 focuses on using a CTE to create a **filtered intermediate result**.
+
+The selected approach was:
+
+```sql
+WITH orders_more_than_800 AS (
+    SELECT *
+    FROM orders
+    WHERE amount > 800
+)
+SELECT *
+FROM orders_more_than_800;
+```
+
+The key mental model is:
+
+```text
+What should my intermediate result represent?
+                    ↓
+Orders where amount > 800
+                    ↓
+Create that result with a CTE
+                    ↓
+Query the CTE
+```
+
+The exercise also demonstrates that filtering can technically be placed outside the CTE, but when the purpose of the CTE is specifically to represent the filtered dataset, placing the `WHERE` condition inside the CTE makes the intermediate result clearer.
 
 ---
 
@@ -399,7 +429,8 @@ CTE + Window Function
 | Data Verification         | ✅ Complete    |
 | Basic Aggregation         | ✅ Complete    |
 | Beginner Question 01      | ✅ Complete    |
-| Beginner Questions 02–10  | 🚧 In Progress |
+| Beginner Question 02      | ✅ Complete    |
+| Beginner Questions 03–10  | 🚧 In Progress |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -427,8 +458,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Question 01: COMPLETE ✅**
+**Beginner Questions 01–02: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 02 — CTE + Filtering**.
+> Next step: Complete **Question 03 — `ROW_NUMBER()`**.
