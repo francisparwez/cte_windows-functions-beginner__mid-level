@@ -1,4 +1,4 @@
-USE CTE_WindowFunctions_Practice
+﻿USE CTE_WindowFunctions_Practice
 /* ============================================================
 1. FIRST CTE
 
@@ -41,3 +41,31 @@ WITH
     )
 SELECT *
 FROM orders_more_than_800;
+
+--3. ROW_NUMBER()
+--For every customer, number their orders based on order_date .
+--Expected concept:
+--	Customer 1
+--	Order 101 → 1
+--	Order 102 → 2
+--	Order 105 → 3
+--	Customer 2
+--	Order 103 → 1
+--	Order 106 → 2
+--Skill:
+--	ROW_NUMBER()
+--Think carefully about:
+--	PARTITION BY
+--	ORDER BY
+
+SELECT
+	c.customer_id,
+	o.order_id,
+	o.order_date,
+	ROW_NUMBER() OVER(
+		PARTITION BY c.customer_id
+		ORDER BY o.order_date, o.order_id
+	) AS order_by_date
+FROM customers c
+JOIN orders o
+ON c.customer_id = o.customer_id;

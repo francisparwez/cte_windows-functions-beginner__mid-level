@@ -159,10 +159,12 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 #### Completed
 
 - ✅ Question 01 — First CTE
+- ✅ Question 02 — CTE + Filtering
+- ✅ Question 03 — `ROW_NUMBER()`
 
 #### Currently working on
 
-- 🚧 Questions 03–10
+- 🚧 Questions 04–10
 
 ---
 
@@ -194,7 +196,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 
 - [x] Question 01 — First CTE
 - [x] Question 02 — CTE + Filtering
-- [ ] Question 03 — `ROW_NUMBER()`
+- [x] Question 03 — `ROW_NUMBER()`
 - [ ] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
 - [ ] Question 05 — `RANK()`
 - [ ] Question 06 — Customer Total Using Window Function
@@ -239,7 +241,7 @@ Topics include:
 
 ### Progress
 
-**2 / 10 completed — 20%**
+**3 / 10 completed — 30%**
 
 ---
 
@@ -330,6 +332,48 @@ Query the CTE
 ```
 
 The exercise also demonstrates that filtering can technically be placed outside the CTE, but when the purpose of the CTE is specifically to represent the filtered dataset, placing the `WHERE` condition inside the CTE makes the intermediate result clearer.
+
+### Question 03 — What Was Practiced?
+
+Question 03 focuses on using `ROW_NUMBER()` to number each customer's orders based on `order_date`.
+
+The solution uses:
+
+```sql
+ROW_NUMBER() OVER(
+    PARTITION BY c.customer_id
+    ORDER BY o.order_date
+) AS order_by_date
+```
+
+The key mental model is:
+
+```text
+PARTITION BY
+        ↓
+"Start numbering again for each customer"
+
+ORDER BY
+        ↓
+"Decide the order in which each customer's rows are numbered"
+```
+
+This produces numbering such as:
+
+```text
+Customer 1
+Order 101 → 1
+Order 102 → 2
+Order 105 → 3
+
+Customer 2
+Order 103 → 1
+Order 106 → 2
+```
+
+The important distinction is that `PARTITION BY` determines **when the numbering restarts**, while `ORDER BY` determines **how the rows are ordered before numbering**.
+
+If two orders for the same customer have the same `order_date`, adding `order_id` as a second ordering column can be used as a tie-breaker for deterministic numbering.
 
 ---
 
@@ -430,7 +474,8 @@ CTE + Window Function
 | Basic Aggregation         | ✅ Complete    |
 | Beginner Question 01      | ✅ Complete    |
 | Beginner Question 02      | ✅ Complete    |
-| Beginner Questions 03–10  | 🚧 In Progress |
+| Beginner Question 03      | ✅ Complete    |
+| Beginner Questions 04–10  | 🚧 In Progress |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -458,8 +503,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Questions 01–02: COMPLETE ✅**
+**Beginner Questions 01–03: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 03 — `ROW_NUMBER()`**.
+> Next step: Complete **Question 04 — `ROW_NUMBER()` Without `PARTITION BY`**.
