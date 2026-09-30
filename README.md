@@ -164,7 +164,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 
 #### Currently working on
 
-- 🚧 Questions 04–10
+- 🚧 Questions 05–10
 
 ---
 
@@ -197,7 +197,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - [x] Question 01 — First CTE
 - [x] Question 02 — CTE + Filtering
 - [x] Question 03 — `ROW_NUMBER()`
-- [ ] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
+- [x] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
 - [ ] Question 05 — `RANK()`
 - [ ] Question 06 — Customer Total Using Window Function
 - [ ] Question 07 — Customer Average Order Value
@@ -241,7 +241,7 @@ Topics include:
 
 ### Progress
 
-**3 / 10 completed — 30%**
+**4 / 10 completed — 40%**
 
 ---
 
@@ -375,6 +375,75 @@ The important distinction is that `PARTITION BY` determines **when the numbering
 
 If two orders for the same customer have the same `order_date`, adding `order_id` as a second ordering column can be used as a tie-breaker for deterministic numbering.
 
+### Question 04 — What Was Practiced?
+
+Question 04 focuses on using `ROW_NUMBER()` **without `PARTITION BY`**.
+
+The solution uses:
+
+```sql
+ROW_NUMBER() OVER (
+    ORDER BY order_date
+) AS row_num
+```
+
+The key mental model is:
+
+```text
+No PARTITION BY
+        ↓
+Treat all orders as one group
+        ↓
+Number every order continuously
+        ↓
+1, 2, 3, 4, ... 60
+```
+
+Unlike Question 03, the numbering does **not restart for each customer**.
+
+### Question 03 vs Question 04
+
+```text
+Question 03
+PARTITION BY customer_id
+        ↓
+Numbering restarts for each customer
+
+Customer 1 → 1, 2, 3
+Customer 2 → 1, 2
+Customer 3 → 1, 2, 3
+
+
+Question 04
+No PARTITION BY
+        ↓
+One continuous sequence across all customers
+
+All customers → 1, 2, 3, 4, 5, ... 60
+```
+
+The important lesson is that `PARTITION BY` controls **whether the window calculation restarts for each group**.
+
+Question 04 also reinforces the difference between the `ORDER BY` inside `OVER()` and the final `ORDER BY`:
+
+- `ORDER BY` inside `OVER()` determines how `ROW_NUMBER()` assigns numbers.
+- The final `ORDER BY` determines how the query results are displayed.
+
+The final query was:
+
+```sql
+SELECT
+    order_id,
+    customer_id,
+    amount,
+    order_date,
+    ROW_NUMBER() OVER (
+        ORDER BY order_date
+    ) AS row_num
+FROM orders
+ORDER BY order_date ASC;
+```
+
 ---
 
 ## Window Functions
@@ -475,7 +544,8 @@ CTE + Window Function
 | Beginner Question 01      | ✅ Complete    |
 | Beginner Question 02      | ✅ Complete    |
 | Beginner Question 03      | ✅ Complete    |
-| Beginner Questions 04–10  | 🚧 In Progress |
+| Beginner Question 04      | ✅ Complete    |
+| Beginner Questions 05–10  | 🚧 In Progress |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -503,8 +573,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Questions 01–03: COMPLETE ✅**
+**Beginner Questions 01–04: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 04 — `ROW_NUMBER()` Without `PARTITION BY`**.
+> Next step: Complete **Question 05 — `RANK()`**.

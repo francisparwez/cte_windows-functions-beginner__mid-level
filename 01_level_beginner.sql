@@ -58,14 +58,29 @@ FROM orders_more_than_800;
 --	PARTITION BY
 --	ORDER BY
 
-SELECT
-	c.customer_id,
-	o.order_id,
-	o.order_date,
-	ROW_NUMBER() OVER(
-		PARTITION BY c.customer_id
-		ORDER BY o.order_date, o.order_id
-	) AS order_by_date
+SELECT c.customer_id, o.order_id, o.order_date, ROW_NUMBER() OVER (
+        PARTITION BY
+            c.customer_id
+        ORDER BY o.order_date, o.order_id
+    ) AS order_by_date
 FROM customers c
-JOIN orders o
-ON c.customer_id = o.customer_id;
+    JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 4. ROW_NUMBER() Without PARTITION
+-- Number all orders from oldest to newest.
+-- Don't divide them by customer.
+-- Question to ask yourself:
+--     What happens if I remove PARTITION BY ?
+-- This is important because you need to understand what PARTITION BY actually does rather
+-- than memorizing it.
+
+SELECT
+    order_id,
+    customer_id,
+    amount,
+    order_date,
+    ROW_NUMBER() OVER (
+        ORDER BY order_date
+    ) AS row_num
+FROM orders
+ORDER BY order_date ASC;
