@@ -161,10 +161,13 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - ✅ Question 01 — First CTE
 - ✅ Question 02 — CTE + Filtering
 - ✅ Question 03 — `ROW_NUMBER()`
+- ✅ Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
+- ✅ Question 05 — `RANK()`
+- ✅ Question 06 — Customer Total Using Window Function
 
 #### Currently working on
 
-- 🚧 Questions 05–10
+- 🚧 Questions 07–10
 
 ---
 
@@ -198,8 +201,8 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - [x] Question 02 — CTE + Filtering
 - [x] Question 03 — `ROW_NUMBER()`
 - [x] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
-- [ ] Question 05 — `RANK()`
-- [ ] Question 06 — Customer Total Using Window Function
+- [x] Question 05 — `RANK()`
+- [x] Question 06 — Customer Total Using Window Function
 - [ ] Question 07 — Customer Average Order Value
 - [ ] Question 08 — Running Total
 - [ ] Question 09 — Previous Order Amount
@@ -241,7 +244,7 @@ Topics include:
 
 ### Progress
 
-**4 / 10 completed — 40%**
+**6 / 10 completed — 60%**
 
 ---
 
@@ -342,7 +345,7 @@ The solution uses:
 ```sql
 ROW_NUMBER() OVER(
     PARTITION BY c.customer_id
-    ORDER BY o.order_date
+    ORDER BY o.order_date, o.order_id
 ) AS order_by_date
 ```
 
@@ -443,6 +446,69 @@ SELECT
 FROM orders
 ORDER BY order_date ASC;
 ```
+
+### Question 05 — What Was Practiced?
+
+Question 05 focuses on ranking each customer's orders by amount, from highest to lowest, using `RANK()`.
+
+The solution uses:
+
+```sql
+RANK() OVER (
+    PARTITION BY c.customer_id
+    ORDER BY o.amount DESC
+) AS amount_rank
+```
+
+- `PARTITION BY c.customer_id` starts the ranking separately for each customer.
+- `ORDER BY o.amount DESC` ranks the highest order amount first.
+- `RANK()` assigns the same rank to tied amounts and skips subsequent rank positions when a tie occurs.
+
+For example, amounts `800, 500, 500, 300` receive ranks `1, 2, 2, 4`.
+
+### `ROW_NUMBER()` vs `RANK()` vs `DENSE_RANK()`
+
+| Amount | `ROW_NUMBER()` | `RANK()` | `DENSE_RANK()` |
+| -----: | -------------: | -------: | -------------: |
+|    800 |              1 |        1 |              1 |
+|    500 |              2 |        2 |              2 |
+|    500 |              3 |        2 |              2 |
+|    300 |              4 |        4 |              3 |
+
+- `ROW_NUMBER()` gives each row a unique number.
+- `RANK()` assigns equal ranks to ties and leaves gaps after ties.
+- `DENSE_RANK()` assigns equal ranks to ties without leaving gaps.
+
+### Question 06 — What Was Practiced?
+
+Question 06 focuses on showing every order alongside the total spending for that customer's orders, without using `GROUP BY`.
+
+The solution uses:
+
+```sql
+SUM(o.amount) OVER (
+    PARTITION BY c.customer_id
+) AS customer_total
+```
+
+The key mental model is:
+
+```text
+PARTITION BY customer_id
+        ↓
+Calculate a total for each customer
+        ↓
+Keep every individual order row
+        ↓
+Repeat that customer's total on each of their orders
+```
+
+Unlike `GROUP BY`, which normally returns one row per customer when grouping by customer, the windowed `SUM()` preserves the individual order rows while displaying the customer-level total on each row.
+
+Question 06 also establishes the distinction between a customer total and a running total:
+
+- `SUM(amount) OVER (PARTITION BY customer_id)` calculates the full total for each customer.
+- Adding `ORDER BY order_date` inside `OVER()` changes the calculation to a running total, ordered by date.
 
 ---
 
@@ -545,7 +611,9 @@ CTE + Window Function
 | Beginner Question 02      | ✅ Complete    |
 | Beginner Question 03      | ✅ Complete    |
 | Beginner Question 04      | ✅ Complete    |
-| Beginner Questions 05–10  | 🚧 In Progress |
+| Beginner Question 05      | ✅ Complete    |
+| Beginner Question 06      | ✅ Complete    |
+| Beginner Questions 07–10  | 🚧 In Progress |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -573,8 +641,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Questions 01–04: COMPLETE ✅**
+**Beginner Questions 01–06: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 05 — `RANK()`**.
+> Next step: Complete **Question 07 — Customer Average Order Value**.

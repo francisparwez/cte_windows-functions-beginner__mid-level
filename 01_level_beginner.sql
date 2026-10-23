@@ -84,3 +84,50 @@ SELECT
     ) AS row_num
 FROM orders
 ORDER BY order_date ASC;
+
+--5. RANK()
+--Rank each customer's orders based on amount , highest first.
+--For example:
+--    Customer 1
+--    800 → rank 1
+--    500 → rank 2
+--    300 → rank 3
+--Use:
+--    RANK()
+--not ROW_NUMBER() .
+--Skill:
+--Understanding the difference between:
+--    ROW_NUMBER
+--    RANK
+--    DENSE_RANK
+
+SELECT c.customer_id, c.customer_name, c.city, o.amount, RANK() OVER (
+        PARTITION BY
+            c.customer_id
+        ORDER BY o.amount DESC
+    ) as amount_rank
+FROM customers c
+    JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 6. Customer Total Using a Window Function
+-- Return every order but also show:
+--     customer_total
+-- Example:
+--     customer_id | order_id | amount | customer_total
+--     -------------------------------------------------
+--     1 | 101 | 500 | 1600
+--     1 | 102 | 800 | 1600
+--     1 | 105 | 300 | 1600
+-- Important:
+-- Do NOT use:
+--     GROUP BY
+-- You need to keep every order.
+-- Skill:
+--     SUM() OVER(...)
+
+SELECT c.customer_id, c.customer_name, o.order_id, o.amount, SUM(o.amount) OVER (
+        PARTITION BY
+            c.customer_id
+    ) AS customer_total
+FROM customers c
+    JOIN orders o ON c.customer_id = o.customer_id;
