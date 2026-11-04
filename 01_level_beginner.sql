@@ -156,3 +156,27 @@ SELECT
     ) AS avg_customer_order_amount
 FROM customers c
     JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 8. Running Total
+-- For each customer, calculate their cumulative spending over time.
+-- Example:
+--     Customer 1
+--     Jan 5 → 500
+--     Jan 10 → 1300
+--     Feb 1 → 1600
+-- Skill:
+--     SUM() OVER (
+--         PARTITION BY ...
+--         ORDER BY ...
+--     )
+-- This is one of the most important window-function patterns you'll learn
+
+SELECT c.customer_id, o.order_date, o.amount, SUM(o.amount) OVER (
+        PARTITION BY
+            c.customer_id
+        ORDER BY
+            o.order_date, o.order_id ROWS BETWEEN UNBOUNDED PRECEDING
+            AND CURRENT ROW
+    ) AS cumulative_spending
+FROM customers c
+    JOIN orders o ON c.customer_id = o.customer_id;

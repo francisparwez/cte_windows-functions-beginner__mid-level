@@ -167,7 +167,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 
 #### Currently working on
 
-- 🚧 Questions 08–10
+- 🚧 Questions 09–10
 
 ---
 
@@ -204,7 +204,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - [x] Question 05 — `RANK()`
 - [x] Question 06 — Customer Total Using Window Function
 - [x] Question 07 — Customer Average Order Value
-- [ ] Question 08 — Running Total
+- [x] Question 08 — Running Total
 - [ ] Question 09 — Previous Order Amount
 - [ ] Question 10 — First Order Per Customer
 
@@ -244,7 +244,7 @@ Topics include:
 
 ### Progress
 
-**7 / 10 completed — 70%**
+**8 / 10 completed — 80%**
 
 ---
 
@@ -538,6 +538,39 @@ Repeat that customer's average on each of their orders
 
 Unlike a grouped `AVG()` query, the windowed `AVG()` does not collapse the result into one row per customer. It preserves each order and displays the customer's average alongside it.
 
+### Question 08 — What Was Practiced?
+
+Question 08 focuses on calculating each customer's **cumulative spending over time** using a running total.
+
+The solution uses:
+
+```sql
+SUM(o.amount) OVER (
+    PARTITION BY c.customer_id
+    ORDER BY o.order_date, o.order_id
+    ROWS BETWEEN UNBOUNDED PRECEDING
+             AND CURRENT ROW
+) AS cumulative_spending
+```
+
+- `PARTITION BY c.customer_id` restarts the running total for each customer.
+- `ORDER BY o.order_date, o.order_id` processes each customer's orders chronologically, using `order_id` as a tie-breaker when order dates match.
+- `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` includes every row from the customer's first order through the current order.
+
+The key mental model is:
+
+```text
+Start with the customer's first order
+        ↓
+Add the current order amount
+        ↓
+Carry the accumulated total forward
+        ↓
+Restart when the next customer begins
+```
+
+The windowed `SUM()` preserves every individual order while displaying the cumulative spending at each point in the customer's order history.
+
 ---
 
 ## Window Functions
@@ -642,7 +675,8 @@ CTE + Window Function
 | Beginner Question 05      | ✅ Complete    |
 | Beginner Question 06      | ✅ Complete    |
 | Beginner Question 07      | ✅ Complete    |
-| Beginner Questions 08–10  | 🚧 In Progress |
+| Beginner Question 08      | ✅ Complete    |
+| Beginner Questions 09–10  | 🚧 In Progress |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -670,8 +704,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Questions 01–07: COMPLETE ✅**
+**Beginner Questions 01–08: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 08 — Running Total**.
+> Next step: Complete **Question 09 — Previous Order Amount**.
