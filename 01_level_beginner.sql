@@ -131,3 +131,28 @@ SELECT c.customer_id, c.customer_name, o.order_id, o.amount, SUM(o.amount) OVER 
     ) AS customer_total
 FROM customers c
     JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 7.  Customer Average Order Value
+-- Return:
+--     customer_id
+--     order_id
+--     amount
+--     average order amount for that customer
+-- Again:
+-- Do not collapse the rows.
+-- You should still see every order.
+-- Skill:
+--     AVG() OVER(...)
+
+SELECT
+    c.customer_id,
+    o.order_id,
+    CAST(o.amount AS DECIMAL(13, 2)) AS amount,
+    CAST(
+        AVG(o.amount) OVER (
+            PARTITION BY
+                c.customer_id
+        ) AS DECIMAL(13, 2)
+    ) AS avg_customer_order_amount
+FROM customers c
+    JOIN orders o ON c.customer_id = o.customer_id;

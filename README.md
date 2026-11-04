@@ -167,7 +167,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 
 #### Currently working on
 
-- 🚧 Questions 07–10
+- 🚧 Questions 08–10
 
 ---
 
@@ -203,7 +203,7 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - [x] Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
 - [x] Question 05 — `RANK()`
 - [x] Question 06 — Customer Total Using Window Function
-- [ ] Question 07 — Customer Average Order Value
+- [x] Question 07 — Customer Average Order Value
 - [ ] Question 08 — Running Total
 - [ ] Question 09 — Previous Order Amount
 - [ ] Question 10 — First Order Per Customer
@@ -244,7 +244,7 @@ Topics include:
 
 ### Progress
 
-**6 / 10 completed — 60%**
+**7 / 10 completed — 70%**
 
 ---
 
@@ -510,6 +510,34 @@ Question 06 also establishes the distinction between a customer total and a runn
 - `SUM(amount) OVER (PARTITION BY customer_id)` calculates the full total for each customer.
 - Adding `ORDER BY order_date` inside `OVER()` changes the calculation to a running total, ordered by date.
 
+### Question 07 — What Was Practiced?
+
+Question 07 focuses on calculating each customer's **average order amount** while keeping every individual order visible.
+
+The solution uses:
+
+```sql
+AVG(o.amount) OVER (
+    PARTITION BY c.customer_id
+) AS avg_customer_order_amount
+```
+
+The query also casts both `amount` and the calculated average to `DECIMAL(13, 2)` so that the displayed values use two decimal places.
+
+The key mental model is:
+
+```text
+PARTITION BY customer_id
+        ↓
+Calculate the average for each customer
+        ↓
+Keep every individual order row
+        ↓
+Repeat that customer's average on each of their orders
+```
+
+Unlike a grouped `AVG()` query, the windowed `AVG()` does not collapse the result into one row per customer. It preserves each order and displays the customer's average alongside it.
+
 ---
 
 ## Window Functions
@@ -613,7 +641,8 @@ CTE + Window Function
 | Beginner Question 04      | ✅ Complete    |
 | Beginner Question 05      | ✅ Complete    |
 | Beginner Question 06      | ✅ Complete    |
-| Beginner Questions 07–10  | 🚧 In Progress |
+| Beginner Question 07      | ✅ Complete    |
+| Beginner Questions 08–10  | 🚧 In Progress |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -641,8 +670,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Questions 01–06: COMPLETE ✅**
+**Beginner Questions 01–07: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 07 — Customer Average Order Value**.
+> Next step: Complete **Question 08 — Running Total**.
