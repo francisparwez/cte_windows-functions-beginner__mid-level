@@ -180,3 +180,67 @@ SELECT c.customer_id, o.order_date, o.amount, SUM(o.amount) OVER (
     ) AS cumulative_spending
 FROM customers c
     JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 9. Previous Order Amount
+-- For every customer, show:
+--     order ID
+--     order date
+--     amount
+--     previous order amount
+-- Example:
+--     order_id | amount | previous_amount
+--     ------------------------------------
+--     101 | 500 | NULL
+--     102 | 800 | 500
+--     105 | 300 | 800
+-- Skill:
+--     LAG()
+-- Ask yourself:
+--     Why can't I easily do this with GROUP BY ?
+
+USE CTE_WindowFunctions_Practice
+
+SELECT
+    order_id,
+    amount,
+    LAG(amount) OVER (
+        PARTITION BY
+            customer_id
+        ORDER BY order_date, order_id
+    ) AS previous_amount
+FROM orders;
+
+-- 10. First Order Per Customer
+-- Return only the first order for every customer.
+-- This is your first problem where you'll combine:
+-- CTE + Window Function
+-- Think:
+-- Step 1
+-- Number each customer's orders.
+-- Step 2
+-- Keep only:
+--     row_number = 1
+-- This is a very important real-world SQL pattern.
+
+USE CTE_WindowFunctions_Practice;
+
+WITH
+    ranked_orders AS (
+        SELECT
+            customer_id,
+            order_id,
+            order_date,
+            ROW_NUMBER() OVER (
+                PARTITION BY
+                    customer_id
+                ORDER BY order_date ASC, order_id ASC
+            ) AS rn
+        FROM orders
+    )
+SELECT
+    customer_id,
+    order_id,
+    order_date
+FROM ranked_orders
+WHERE
+    rn = 1;

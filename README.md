@@ -164,10 +164,14 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - ✅ Question 04 — `ROW_NUMBER()` Without `PARTITION BY`
 - ✅ Question 05 — `RANK()`
 - ✅ Question 06 — Customer Total Using Window Function
+- ✅ Question 07 — Customer Average Order Value
+- ✅ Question 08 — Running Total
+- ✅ Question 09 — Previous Order Amount
+- ✅ Question 10 — First Order Per Customer
 
 #### Currently working on
 
-- 🚧 Questions 09–10
+- 🚧 Mid-Level Questions 11–20
 
 ---
 
@@ -205,8 +209,8 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - [x] Question 06 — Customer Total Using Window Function
 - [x] Question 07 — Customer Average Order Value
 - [x] Question 08 — Running Total
-- [ ] Question 09 — Previous Order Amount
-- [ ] Question 10 — First Order Per Customer
+- [x] Question 09 — Previous Order Amount
+- [x] Question 10 — First Order Per Customer
 
 ### 🟡 Mid-Level
 
@@ -244,7 +248,7 @@ Topics include:
 
 ### Progress
 
-**8 / 10 completed — 80%**
+**10 / 10 completed — 100%**
 
 ---
 
@@ -571,6 +575,85 @@ Restart when the next customer begins
 
 The windowed `SUM()` preserves every individual order while displaying the cumulative spending at each point in the customer's order history.
 
+### Question 09 — What Was Practiced?
+
+Question 09 focuses on retrieving each customer's **previous order amount** using `LAG()`.
+
+The solution uses:
+
+```sql
+LAG(amount) OVER (
+    PARTITION BY customer_id
+    ORDER BY order_date, order_id
+) AS previous_amount
+```
+
+- `LAG(amount)` retrieves the amount from the preceding row in the window.
+- `PARTITION BY customer_id` keeps each customer's order history separate.
+- `ORDER BY order_date, order_id` defines the chronological sequence and uses `order_id` as a tie-breaker.
+- The first order for each customer returns `NULL` because no previous order exists.
+
+The key mental model is:
+
+```text
+Separate orders by customer
+        ↓
+Arrange each customer's orders chronologically
+        ↓
+Look back one row
+        ↓
+Return the previous order amount
+```
+
+Unlike `GROUP BY`, which aggregates rows into grouped results, `LAG()` preserves every order row and retrieves a value from the preceding row. This makes it useful for comparing transactions across time.
+
+### Question 10 — What Was Practiced?
+
+Question 10 combines a **CTE with `ROW_NUMBER()`** to return only the first order for each customer.
+
+The CTE assigns a row number to each customer's orders:
+
+```sql
+WITH ranked_orders AS (
+    SELECT
+        customer_id,
+        order_id,
+        order_date,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date ASC, order_id ASC
+        ) AS rn
+    FROM orders
+)
+SELECT
+    customer_id,
+    order_id,
+    order_date
+FROM ranked_orders
+WHERE rn = 1;
+```
+
+- `PARTITION BY customer_id` restarts row numbering for each customer.
+- `ORDER BY order_date ASC, order_id ASC` places the earliest order first and provides a tie-breaker.
+- `ROW_NUMBER()` assigns `1` to the first order in each customer's sequence.
+- The outer query filters the CTE using `WHERE rn = 1`.
+
+The key mental model is:
+
+```text
+Step 1: Number each customer's orders
+        ↓
+Step 2: Store the numbered rows in a CTE
+        ↓
+Step 3: Keep only rows where rn = 1
+        ↓
+Return the first order for every customer
+```
+
+The CTE is needed because the window-function result is calculated in the query's `SELECT` phase and cannot be filtered directly in that same query's `WHERE` clause. The outer query can filter the `rn` value produced by the CTE.
+
+This is a reusable **first-row-per-group** pattern, useful for identifying each customer's first purchase, a user's first login, or an account's earliest transaction.
+
 ---
 
 ## Window Functions
@@ -676,7 +759,8 @@ CTE + Window Function
 | Beginner Question 06      | ✅ Complete    |
 | Beginner Question 07      | ✅ Complete    |
 | Beginner Question 08      | ✅ Complete    |
-| Beginner Questions 09–10  | 🚧 In Progress |
+| Beginner Question 09      | ✅ Complete    |
+| Beginner Question 10      | ✅ Complete    |
 | Mid-Level Questions 11–20 | 🚧 Not Started |
 
 ---
@@ -704,8 +788,8 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **Database & Data Setup: COMPLETE ✅**
 
-**Beginner Questions 01–08: COMPLETE ✅**
+**Beginner Questions 01–10: COMPLETE ✅**
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Complete **Question 09 — Previous Order Amount**.
+> Next step: Begin **Question 11 — Highest Order Per Customer**.
