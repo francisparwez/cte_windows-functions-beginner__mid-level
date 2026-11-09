@@ -137,6 +137,7 @@ cte_windows-functions-beginner__mid-level/
 │
 ├── 00_schema__data_insertion.sql
 ├── 01_level_beginner.sql
+├── 02_level_2_mid_level.sql
 └── README.md
 ```
 
@@ -169,9 +170,18 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 - ✅ Question 09 — Previous Order Amount
 - ✅ Question 10 — First Order Per Customer
 
+### `02_level_2_mid_level.sql`
+
+Contains the solutions for the **Mid-Level CTE & Window Function practice questions**.
+
+#### Completed
+
+- ✅ Question 11 — Highest Order Per Customer
+- ✅ Question 12 — Second Highest Order Per Customer
+
 #### Currently working on
 
-- 🚧 Mid-Level Questions 11–20
+- 🚧 Questions 13–20
 
 ---
 
@@ -214,8 +224,8 @@ Contains the solutions for the **Beginner-level CTE & Window Function practice q
 
 ### 🟡 Mid-Level
 
-- [ ] Question 11 — Highest Order Per Customer
-- [ ] Question 12 — Second Highest Order Per Customer
+- [x] Question 11 — Highest Order Per Customer
+- [x] Question 12 — Second Highest Order Per Customer
 - [ ] Question 13 — Customers With Above-Average Orders
 - [ ] Question 14 — Order Difference From Previous Order
 - [ ] Question 15 — Top 2 Orders Per Customer
@@ -271,7 +281,7 @@ Topics include:
 
 ### Progress
 
-**0 / 10 completed — 0%**
+**2 / 10 completed — 20%**
 
 ---
 
@@ -654,6 +664,78 @@ The CTE is needed because the window-function result is calculated in the query'
 
 This is a reusable **first-row-per-group** pattern, useful for identifying each customer's first purchase, a user's first login, or an account's earliest transaction.
 
+### Question 11 — What Was Practiced?
+
+Question 11 focuses on returning the **highest-value order for each customer**, while preserving the complete order-level result rather than using `MAX()` with `GROUP BY`.
+
+The solution uses:
+
+```sql
+ROW_NUMBER() OVER (
+    PARTITION BY c.customer_id
+    ORDER BY o.amount DESC, o.order_id ASC
+) AS row_num
+```
+
+The CTE stores the ranked orders, and the outer query filters for `row_num = 1`.
+
+- `PARTITION BY c.customer_id` ranks each customer's orders separately.
+- `ORDER BY o.amount DESC` places the largest order first.
+- `o.order_id ASC` provides a deterministic tie-breaker when a customer has orders with equal amounts.
+- `WHERE row_num = 1` returns exactly one highest-ranked order per customer.
+
+The key mental model is:
+
+```text
+Separate orders by customer
+        ↓
+Sort each customer's orders from highest to lowest
+        ↓
+Assign a row number
+        ↓
+Keep row_num = 1
+        ↓
+Return the highest order for each customer
+```
+
+`ROW_NUMBER()` is appropriate when exactly one order must be returned per customer. If all orders tied for the highest amount were required, `RANK()` or `DENSE_RANK()` over the amount alone would be more appropriate.
+
+### Question 12 — What Was Practiced?
+
+Question 12 focuses on returning the **second order in each customer's amount-ranked list** using `ROW_NUMBER()` and a CTE.
+
+The solution uses:
+
+```sql
+ROW_NUMBER() OVER (
+    PARTITION BY c.customer_id
+    ORDER BY o.amount DESC, o.order_id ASC
+) AS row_num
+```
+
+The outer query filters for `row_num = 2`.
+
+- `PARTITION BY c.customer_id` restarts numbering for each customer.
+- `ORDER BY o.amount DESC` ranks larger orders before smaller orders.
+- `o.order_id ASC` breaks ties consistently.
+- `WHERE row_num = 2` returns the second row in each customer's sorted order list.
+
+The key mental model is:
+
+```text
+Separate orders by customer
+        ↓
+Sort each customer's orders by amount, highest first
+        ↓
+Assign a unique row number
+        ↓
+Keep row_num = 2
+        ↓
+Return the second order by position
+```
+
+**Important distinction:** Because the implementation uses `ROW_NUMBER()`, it returns the second order by position, even if the highest amount is duplicated. It does not necessarily return the second-highest distinct amount. To return every order with the second-highest distinct amount, use `DENSE_RANK()` ordered by `amount DESC` without adding `order_id` to that ranking, then filter for rank `2`.
+
 ---
 
 ## Window Functions
@@ -761,7 +843,9 @@ CTE + Window Function
 | Beginner Question 08      | ✅ Complete    |
 | Beginner Question 09      | ✅ Complete    |
 | Beginner Question 10      | ✅ Complete    |
-| Mid-Level Questions 11–20 | 🚧 Not Started |
+| Mid-Level Question 11     | ✅ Complete    |
+| Mid-Level Question 12     | ✅ Complete    |
+| Mid-Level Questions 13–20 | 🚧 Not Started |
 
 ---
 
@@ -792,4 +876,4 @@ By completing this project, the following SQL skills will be demonstrated:
 
 **CTE & Window Function Practice: IN PROGRESS 🚧**
 
-> Next step: Begin **Question 11 — Highest Order Per Customer**.
+> Next step: Continue with **Question 13 — Customers With Above-Average Orders**.
